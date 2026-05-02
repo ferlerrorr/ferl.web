@@ -1552,8 +1552,8 @@
                       ((r = a = s), u(s), (i = null));
                     })));
               else a = t;
-              const r = e > 0 ? window.scrollY / e : 0;
-              n?.(clamp(r, 0, 1));
+              const progress = e > 0 ? window.scrollY / e : 0;
+              n?.(clamp(progress, 0, 1));
               clearTimeout(m.timeout);
               m.timeout = setTimeout(() => {
                 if (e <= 0 || m.isSnapping || window.innerWidth <= 900 || IS_TOUCH) return;
