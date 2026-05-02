@@ -1,0 +1,1832 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Ferl John D. Javier — Full Stack Developer</title>
+    <meta
+      name="description"
+      content="Full Stack Developer. Node.js · React · Laravel. Philippines."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:ital,wght@0,300;0,400;1,300&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="preload" as="video" href="assets/vecteezy_the-colorful-fish-silhouette-swimming-in-liquid-texture_44306788.mp4" type="video/mp4" />
+    <style>
+      @layer reset,tokens,base,layout,ui,panels,portfolio;
+      @layer reset {
+        *,
+        *::before,
+        *::after {
+          box-sizing: border-box;
+          margin: 0;
+          padding: 0;
+        }
+      }
+      @layer tokens {
+        :root {
+          --bg: #0a0907;
+          --fg: #ede8df;
+          --muted: #8a7b6e;
+          --accent: #d4a84b;
+          --accent-dim: color-mix(in srgb, var(--accent) 60%, transparent);
+          --hairline: 0.0625rem;
+          --ui-inset: 1.75rem;
+          --font-display: "Bebas Neue", sans-serif;
+          --font-mono: "DM Mono", monospace;
+          --z-ui: 10;
+        }
+      }
+      @layer base {
+        html {
+          overscroll-behavior: auto;
+          scroll-behavior: auto !important;
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+        }
+        html::-webkit-scrollbar {
+          display: none;
+        }
+        body {
+          background: var(--bg);
+          color: var(--fg);
+          font-family: var(--font-mono);
+          overflow-x: hidden;
+          overscroll-behavior: none;
+          touch-action: pan-y;
+          -webkit-overflow-scrolling: touch;
+        }
+        a {
+          color: inherit;
+          text-decoration: none;
+        }
+      }
+      @layer layout {
+        .scene {
+          position: fixed;
+          inset: 0;
+          overflow: hidden;
+          z-index: 0;
+        }
+        #scene_bg {
+          position: absolute;
+          inset: 0;
+          height: 500%;
+          background: linear-gradient(
+            to top,
+            oklch(32% 0.12 55) 0%,
+            oklch(31% 0.12 57) 3.4%,
+            oklch(29% 0.11 65) 8.6%,
+            oklch(26% 0.1 80) 15.6%,
+            oklch(23% 0.09 130) 24.2%,
+            oklch(20% 0.08 200) 34.4%,
+            oklch(17% 0.07 230) 45.9%,
+            oklch(14% 0.06 252) 57.8%,
+            oklch(12% 0.06 268) 69.6%,
+            oklch(11% 0.05 280) 80.2%,
+            oklch(9% 0.04 300) 89.2%,
+            oklch(6% 0.02 320) 95.9%,
+            oklch(4% 0.01 0) 100%
+          );
+          will-change: transform;
+          z-index: -1;
+        }
+        .scroll-track {
+          display: block;
+          inline-size: 100%;
+          position: relative;
+          will-change: transform;
+          user-select: none;
+        }
+        .swimming-fish {
+          position: absolute;
+          top: 0;
+          right: 0;
+          left: auto;
+          width: 50vw;
+          height: 100%;
+          z-index: 2;
+          pointer-events: none;
+          overflow: hidden;
+          -webkit-mask-image:
+            linear-gradient(to right, transparent 0%, black 14%, black 86%, transparent 100%),
+            linear-gradient(to bottom, transparent 0%, black 14%, black 86%, transparent 100%);
+          -webkit-mask-composite: destination-in;
+          mask-image:
+            linear-gradient(to right, transparent 0%, black 14%, black 86%, transparent 100%),
+            linear-gradient(to bottom, transparent 0%, black 14%, black 86%, transparent 100%);
+          mask-composite: intersect;
+        }
+        .swimming-fish.fish-left {
+          right: auto;
+          left: 0;
+        }
+        .swimming-fish.fish-center {
+          right: auto;
+          left: 50%;
+          transform: translateX(-50%);
+        }
+        .swimming-fish.fish-full {
+          width: 100vw;
+          height: 100lvh;
+          right: 0;
+          left: 0;
+          transform: none;
+        }
+        .swimming-fish video {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          filter: url(#chromakey);
+          opacity: 0;
+          transition: opacity 1.5s ease-in-out;
+          will-change: opacity, transform;
+        }
+      }
+      @layer ui {
+        #hud {
+          position: fixed;
+          inset-block-start: var(--ui-inset);
+          inset-inline-end: var(--ui-inset);
+          z-index: var(--z-ui);
+          display: flex;
+          flex-direction: column;
+          align-items: flex-end;
+          gap: 0.4rem;
+          pointer-events: none;
+        }
+        .hud-title {
+          font-family: var(--font-display);
+          font-size: 0.85rem;
+          letter-spacing: 0.12em;
+          color: var(--accent);
+          line-height: 1.1;
+          text-align: right;
+          opacity: 0.6;
+        }
+        .progress-bar {
+          inline-size: 5rem;
+          block-size: var(--hairline);
+          background: color-mix(in srgb, var(--muted) 30%, transparent);
+          position: relative;
+          overflow: hidden;
+        }
+        .progress-fill {
+          position: absolute;
+          inset-block: 0;
+          inset-inline-start: 0;
+          width: 100%;
+          background: var(--accent);
+          transform-origin: left;
+          transform: scaleX(0);
+          will-change: transform;
+        }
+        .hud-label {
+          font-size: 0.5rem;
+          letter-spacing: 0.28em;
+          text-transform: uppercase;
+          color: var(--accent);
+        }
+        #panel_nav {
+          position: fixed;
+          inset-inline-start: var(--ui-inset);
+          inset-block-start: 50%;
+          translate: 0 -50%;
+          z-index: var(--z-ui);
+          display: flex;
+          flex-direction: column;
+        }
+        .nav-dot {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          inline-size: 1.2rem;
+          block-size: 1.2rem;
+          border: none;
+          background: transparent;
+          cursor: pointer;
+          padding: 0;
+          opacity: 0.4;
+          transition:
+            scale 0.3s,
+            opacity 0.3s;
+        }
+        .nav-dot::after {
+          content: "";
+          display: block;
+          inline-size: 0.2rem;
+          block-size: 0.2rem;
+          border-radius: 50%;
+          background-color: var(--muted);
+          transition: background-color 0.3s;
+        }
+        .nav-dot.is-active {
+          scale: 1.8;
+          opacity: 1;
+        }
+        .nav-dot.is-active::after {
+          background-color: var(--accent);
+        }
+        #social_links {
+          position: fixed;
+          inset-inline-end: var(--ui-inset);
+          inset-block-start: 50%;
+          translate: 0 -50%;
+          z-index: var(--z-ui);
+          display: flex;
+          flex-direction: column;
+          gap: 0.6rem;
+        }
+        .social-btn {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 2.4rem;
+          height: 2.4rem;
+          border-radius: 50%;
+          border: 1px solid color-mix(in srgb, var(--muted) 65%, transparent);
+          color: color-mix(in srgb, var(--muted) 85%, transparent);
+          background: transparent;
+          transition: border-color 0.25s, color 0.25s;
+          text-decoration: none;
+        }
+        .social-btn:hover {
+          border-color: var(--accent);
+          color: var(--accent);
+        }
+        .social-btn svg {
+          width: 1rem;
+          height: 1rem;
+          flex-shrink: 0;
+        }
+      }
+      @layer panels {
+        .panel {
+          min-block-size: 100lvh;
+          block-size: auto;
+          inline-size: 100%;
+          position: relative;
+          display: block;
+          contain: layout paint;
+          content-visibility: auto;
+          contain-intrinsic-size: auto 100lvh;
+        }
+        .panel-inner {
+          min-block-size: 100lvh;
+          block-size: auto;
+          display: flex;
+          align-items: flex-end;
+          padding: 4vw 5vw;
+          position: relative;
+          overflow: hidden;
+        }
+        .panel-inner.is-right {
+          justify-content: flex-end;
+        }
+        .panel-inner.is-center {
+          justify-content: center;
+        }
+        .layer-bg {
+          position: absolute;
+          inset-block-end: -0.15em;
+          inset-inline-start: -0.02em;
+          font-family: var(--font-display);
+          font-size: clamp(16rem, 28vw, 30rem);
+          line-height: 1.1;
+          letter-spacing: -0.04em;
+          color: color-mix(in srgb, var(--fg) 4%, transparent);
+          pointer-events: none;
+          user-select: none;
+          white-space: nowrap;
+        }
+        .panel-inner.is-right .layer-bg {
+          inset-inline-start: auto;
+          inset-inline-end: -0.02em;
+        }
+        .panel-inner.is-center .layer-bg {
+          inset-inline-start: 50%;
+          translate: -50% 0;
+        }
+        .panel-copy {
+          position: relative;
+          z-index: 1;
+          max-inline-size: 80rem;
+        }
+        .align-right {
+          text-align: right;
+        }
+        .align-center {
+          text-align: center;
+        }
+        .layer-tag {
+          font-size: 1rem;
+          letter-spacing: 0.2em;
+          text-transform: uppercase;
+          color: var(--accent);
+          opacity: 0.7;
+          margin-block-end: 1.2rem;
+        }
+        h2 {
+          font-family: var(--font-display);
+          font-size: clamp(3rem, 8vw, 7rem);
+          font-weight: 400;
+          letter-spacing: 0.03em;
+          line-height: 0.9;
+          color: var(--fg);
+          margin-block-end: 1.5rem;
+        }
+        .layer-line {
+          font-family: var(--font-display);
+          font-size: 1rem;
+          line-height: 1.9;
+          color: color-mix(in srgb, var(--fg) 55%, transparent);
+          letter-spacing: 0.1em;
+        }
+        .scroll-hint {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.6rem;
+          margin-block-start: 2.5rem;
+          color: var(--accent);
+          animation: hint-pulse 2.5s ease-in-out infinite;
+        }
+        .scroll-hint-text {
+          font-size: 1rem;
+          letter-spacing: 0.2em;
+          text-transform: uppercase;
+        }
+        @keyframes hint-pulse {
+          0%,
+          100% {
+            opacity: 1;
+          }
+          50% {
+            opacity: 0.2;
+          }
+        }
+      }
+      @layer portfolio {
+        #panel_origin .panel-copy {
+          padding-block-end: 1rem;
+        }
+        .origin-contacts {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 0.6rem 1.6rem;
+          margin-block-start: 1.5rem;
+        }
+        .origin-contacts a {
+          font-size: 1rem;
+          letter-spacing: 0.15em;
+          text-transform: uppercase;
+          color: var(--accent-dim);
+          transition: color 0.2s;
+        }
+        .origin-contacts a:hover {
+          color: var(--accent);
+        }
+        .stack-block {
+          margin-block-start: 1.5rem;
+          display: flex;
+          flex-direction: column;
+          gap: 0.9rem;
+        }
+        .stack-row {
+          display: flex;
+          flex-direction: column;
+          gap: 0.25rem;
+          align-items: flex-end;
+        }
+        .stack-cat {
+          font-size: 1rem;
+          letter-spacing: 0.2em;
+          text-transform: uppercase;
+          color: var(--accent);
+          opacity: 0.6;
+        }
+        .stack-items {
+          font-size: 1rem;
+          letter-spacing: 0.12em;
+          color: color-mix(in srgb, var(--fg) 65%, transparent);
+          line-height: 1.6;
+        }
+        .work-table {
+          margin-block-start: 1.75rem;
+          display: flex;
+          flex-direction: column;
+          gap: 0;
+        }
+        .work-row {
+          display: grid;
+          grid-template-columns: 1fr auto;
+          gap: 2rem;
+          padding-block: 1.1rem;
+          border-block-end: var(--hairline) solid
+            color-mix(in srgb, var(--muted) 18%, transparent);
+        }
+        .work-row:first-child {
+          border-block-start: var(--hairline) solid
+            color-mix(in srgb, var(--muted) 18%, transparent);
+        }
+        .work-left {
+          display: flex;
+          flex-direction: column;
+          gap: 0.35rem;
+        }
+        .work-co {
+          font-size: 1rem;
+          letter-spacing: 0.14em;
+          text-transform: uppercase;
+          color: var(--fg);
+        }
+        .work-role {
+          font-size: 1rem;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+          color: color-mix(in srgb, var(--fg) 45%, transparent);
+        }
+        .work-yr {
+          font-size: 1rem;
+          letter-spacing: 0.14em;
+          color: var(--accent);
+          align-self: center;
+          white-space: nowrap;
+        }
+        .work-current {
+          color: var(--accent);
+        }
+        .proj-list {
+          margin-block-start: 1.75rem;
+          display: flex;
+          flex-direction: column;
+          gap: 0;
+        }
+        .proj-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 1.5rem;
+          padding-block: 1.1rem;
+          border-block-end: var(--hairline) solid
+            color-mix(in srgb, var(--muted) 18%, transparent);
+        }
+        .proj-row:first-child {
+          border-block-start: var(--hairline) solid
+            color-mix(in srgb, var(--muted) 18%, transparent);
+        }
+        .proj-name {
+          font-size: 1rem;
+          letter-spacing: 0.14em;
+          text-transform: uppercase;
+          color: var(--fg);
+        }
+        .proj-stack {
+          font-size: 1rem;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+          color: color-mix(in srgb, var(--fg) 40%, transparent);
+          white-space: nowrap;
+        }
+        #panel_reach h2 {
+          color: var(--accent);
+        }
+        #panel_reach .layer-bg {
+          color: color-mix(in srgb, var(--accent) 5%, transparent);
+        }
+        .reach-links {
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+          margin-block: 1.75rem;
+          align-items: center;
+        }
+        .reach-link {
+          font-size: 1rem;
+          letter-spacing: 0.16em;
+          text-transform: uppercase;
+          color: var(--accent);
+          opacity: 0.75;
+          transition: opacity 0.2s;
+        }
+        .reach-link:hover {
+          opacity: 1;
+        }
+        .reach-divider {
+          inline-size: 3rem;
+          block-size: var(--hairline);
+          background: color-mix(in srgb, var(--accent) 25%, transparent);
+          margin-block: 0.25rem;
+          margin-inline: auto;
+        }
+        #panel_spirit h2 {
+          color: var(--accent);
+        }
+        #panel_craft .panel-inner {
+          justify-content: space-between;
+        }
+        .craft-about {
+          max-inline-size: min(38rem, 44vw);
+        }
+        .craft-about .about-headline {
+          font-family: var(--font-display);
+          font-size: clamp(2rem, 3.8vw, 3.2rem);
+          line-height: 0.95;
+          letter-spacing: 0.03em;
+          color: var(--fg);
+          margin-block-end: 1.75rem;
+        }
+        .about-creds {
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+          padding-block-start: 1.5rem;
+          border-block-start: var(--hairline) solid
+            color-mix(in srgb, var(--muted) 18%, transparent);
+        }
+        .about-cred-row {
+          display: flex;
+          flex-direction: column;
+          gap: 0.2rem;
+        }
+        .about-cred-label {
+          font-size: 0.5rem;
+          letter-spacing: 0.28em;
+          text-transform: uppercase;
+          color: var(--accent);
+          opacity: 0.7;
+        }
+        .about-cred-val {
+          font-size: 1rem;
+          letter-spacing: 0.12em;
+          color: color-mix(in srgb, var(--fg) 60%, transparent);
+          line-height: 1.6;
+        }
+        .about-bio {
+          font-size: 1rem;
+          letter-spacing: 0.1em;
+          color: color-mix(in srgb, var(--fg) 42%, transparent);
+          line-height: 1.75;
+          font-style: italic;
+          margin-block-end: 1.5rem;
+        }
+        #panel_origin .panel-inner {
+          justify-content: space-between;
+          align-items: flex-end;
+          gap: 4rem;
+        }
+        #panel_origin .work-quote {
+          align-self: center;
+          max-inline-size: 42rem;
+          padding-inline-end: calc(var(--ui-inset) + 3rem);
+          margin-block-start: 10vh;
+        }
+        #panel_origin .work-quote blockquote {
+          font-size: clamp(2.8rem, 5.5vw, 5rem);
+        }
+        #panel_work .panel-inner {
+          justify-content: space-between;
+          align-items: flex-end;
+          gap: 4rem;
+        }
+        #panel_work .work-quote {
+          max-inline-size: 42rem;
+        }
+        #panel_work .work-quote blockquote {
+          font-size: clamp(2.8rem, 5.5vw, 5rem);
+        }
+        .work-quote {
+          max-inline-size: 30rem;
+          text-align: right;
+          padding-block-end: 1rem;
+        }
+        .work-quote blockquote {
+          font-family: var(--font-display);
+          font-size: clamp(2rem, 3.8vw, 3.4rem);
+          line-height: 1.05;
+          letter-spacing: 0.03em;
+          color: color-mix(in srgb, var(--fg) 12%, transparent);
+          margin-block-end: 1.25rem;
+        }
+        .work-quote cite {
+          font-family: var(--font-mono);
+          font-size: 0.65rem;
+          letter-spacing: 0.24em;
+          text-transform: uppercase;
+          color: var(--accent);
+          opacity: 0.55;
+          font-style: normal;
+        }
+        #panel_build .swimming-fish {
+          width: 30vw;
+        }
+        #panel_build .panel-inner {
+          justify-content: space-between;
+          align-items: center;
+          gap: 2rem;
+        }
+        .fg {
+          --fg-perspective: 900px;
+          --fg-xoffset: 240px;
+          --fg-yoffset: 50px;
+          --fg-rotation: 14deg;
+          --fg-blur: 1.5px;
+          --fg-duration: 0.5s;
+          position: relative;
+          z-index: 1;
+          flex-shrink: 0;
+          width: min(900px, 58vw);
+          align-self: stretch;
+          display: flex;
+          flex-direction: column;
+        }
+        .fg-stage {
+          position: relative;
+          flex: 1;
+          min-height: 430px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          overflow: visible;
+          contain: layout;
+        }
+        .fg-item {
+          position: absolute;
+          width: min(800px, 88%);
+          pointer-events: none;
+        }
+        .fg-item[data-side="active"] {
+          pointer-events: auto;
+          width: 100%;
+          height: 100%;
+          inset: 0;
+        }
+        .fg-slide {
+          aspect-ratio: 16/9;
+          border-radius: 10px;
+          overflow: hidden;
+          background: transparent;
+          border: none;
+          position: relative;
+          transition:
+            transform var(--fg-duration) ease,
+            filter var(--fg-duration) ease,
+            opacity var(--fg-duration) ease;
+        }
+        .fg-slide img {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+          padding: 0.65rem;
+          display: block;
+        }
+        .fg-item[data-side="active"] .fg-slide {
+          filter: none;
+          opacity: 1;
+          transform: perspective(var(--fg-perspective));
+          width: 100%;
+          height: 100%;
+          aspect-ratio: unset;
+        }
+        .fg-item[data-side="prev"] .fg-slide {
+          filter: blur(calc(var(--center-offset) * var(--fg-blur)));
+          opacity: calc(1 - var(--center-offset) * 0.68);
+          transform: perspective(var(--fg-perspective))
+            translateX(calc(var(--center-offset) * -1 * var(--fg-xoffset)))
+            translateY(calc(var(--center-offset) * -1 * var(--fg-yoffset)))
+            translateZ(calc(var(--center-offset) * 40px))
+            rotateZ(
+              calc(
+                var(--center-offset) * -1 * var(--fg-rotation) +
+                  sin(calc(var(--i) * 1rad)) * 6deg
+              )
+            );
+        }
+        .fg-item[data-side="next"] .fg-slide {
+          filter: blur(calc(var(--center-offset) * var(--fg-blur)));
+          opacity: calc(1 - var(--center-offset) * 0.3);
+          transform: perspective(var(--fg-perspective))
+            translateX(calc(var(--center-offset) * var(--fg-xoffset)))
+            translateY(calc(var(--center-offset) * var(--fg-yoffset)))
+            translateZ(calc(var(--center-offset) * -80px))
+            rotateZ(
+              calc(
+                var(--center-offset) * var(--fg-rotation) +
+                  sin(calc(var(--i) * 1.7rad)) * 6deg
+              )
+            );
+        }
+        .fg-btn {
+          display: none !important;
+          transition:
+            background 0.2s,
+            border-color 0.2s;
+        }
+        .fg-btn:hover {
+          background: rgba(255, 255, 255, 0.22);
+          border-color: rgba(255, 255, 255, 0.38);
+        }
+        .fg-prev {
+          left: 0.75rem;
+        }
+        .fg-next {
+          right: 0.75rem;
+        }
+        .fg-thumbs {
+          display: flex;
+          gap: 0.4rem;
+          justify-content: center;
+          list-style: none;
+          margin-top: 0.9rem;
+          padding: 0;
+          overflow-x: auto;
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+        }
+        .fg-thumbs::-webkit-scrollbar {
+          display: none;
+        }
+        .fg-thumb {
+          appearance: none;
+          background: rgba(255, 255, 255, 0.03);
+          border: 2px solid transparent;
+          border-radius: 5px;
+          cursor: pointer;
+          width: 62px;
+          height: 40px;
+          padding: 0;
+          overflow: hidden;
+          opacity: 0.4;
+          transition:
+            opacity 0.2s,
+            border-color 0.2s;
+          display: block;
+        }
+        .fg-thumb img {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+          display: block;
+          padding: 2px;
+        }
+        .fg-thumb[aria-current="true"] {
+          border-color: var(--accent);
+          opacity: 1;
+        }
+        .fg-thumb:hover {
+          opacity: 0.75;
+        }
+        .fg-overlay {
+          position: absolute;
+          inset-block-start: 0;
+          inset-inline: 0;
+          padding: 1.5rem 1.6rem;
+          background: linear-gradient(
+            to bottom,
+            rgba(0, 0, 0, 0.88) 0%,
+            rgba(0, 0, 0, 0.5) 65%,
+            transparent 100%
+          );
+          pointer-events: none;
+        }
+        .fg-counter {
+          font-family: var(--font-mono);
+          font-size: 0.75rem;
+          letter-spacing: 0.22em;
+          color: var(--accent);
+          opacity: 0.85;
+          margin-block-end: 0.55rem;
+        }
+        .fg-proj-title {
+          font-family: var(--font-display);
+          font-size: clamp(1.3rem, 2.6vw, 2.2rem);
+          letter-spacing: 0.06em;
+          color: var(--fg);
+          line-height: 1.05;
+          margin-block-end: 0.45rem;
+        }
+        .fg-meta-right {
+          position: absolute;
+          inset-block-start: 1.5rem;
+          inset-inline-end: 1.6rem;
+          display: flex;
+          flex-direction: column;
+          align-items: flex-end;
+          gap: 0.5rem;
+          pointer-events: none;
+        }
+        .fg-proj-sub {
+          font-family: var(--font-mono);
+          font-size: 0.75rem;
+          letter-spacing: 0.18em;
+          color: var(--muted);
+          text-align: right;
+        }
+        .fg-tags {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 0.35rem;
+          justify-content: flex-end;
+        }
+        .fg-tag {
+          font-family: var(--font-mono);
+          font-size: 0.7rem;
+          letter-spacing: 0.14em;
+          text-transform: uppercase;
+          background: rgba(0, 0, 0, 0.65);
+          border: 1px solid rgba(255, 255, 255, 0.28);
+          border-radius: 999px;
+          padding: 0.25rem 0.7rem;
+          color: var(--fg);
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .fg-slide {
+            transition: none;
+          }
+        }
+      }
+      @media (width <= 56.25em) {
+        /* ── Tokens ── */
+        :root { --ui-inset: 1.25rem; }
+
+        /* ── Fixed UI ── */
+        #panel_nav { display: none; }
+
+        #hud { gap: 0.3rem; }
+        .hud-title { font-size: 0.7rem; }
+
+        #social_links {
+          inset-inline-end: unset;
+          inset-block-start: unset;
+          inset-block-end: var(--ui-inset);
+          inset-inline-start: 50%;
+          translate: -50% 0;
+          flex-direction: row;
+          gap: 0.6rem;
+        }
+
+        /* ── Panels ── */
+        .panel-inner {
+          padding: 6vw 6vw;
+          padding-block-end: calc(var(--ui-inset) * 2 + 3rem);
+        }
+        .layer-bg { font-size: 35vw; }
+        h2 { font-size: clamp(2rem, 10vw, 3.2rem); }
+        .layer-tag { font-size: 0.75rem; }
+        .layer-line { font-size: 0.85rem; line-height: 1.6; }
+
+        /* ── Stack all multi-column panels ── */
+        #panel_origin .panel-inner,
+        #panel_craft .panel-inner,
+        #panel_work .panel-inner,
+        #panel_build .panel-inner {
+          flex-direction: column;
+          align-items: center;
+          justify-content: flex-end;
+          gap: 2rem;
+          text-align: center;
+        }
+
+        /* ── Force center alignment when stacked ── */
+        .panel-copy { display: flex; flex-direction: column; align-items: center; text-align: center; }
+        .align-right { text-align: center; }
+        .stack-row { align-items: center; text-align: center; }
+        #panel_reach .reach-links { align-items: center; }
+        #panel_reach .panel-copy { text-align: center; }
+        #panel_reach .reach-divider { margin-inline: auto; }
+        .about-cred-row { align-items: center; text-align: center; }
+
+        /* ── Justified long text with centered last line ── */
+        .layer-line, .about-bio, .work-quote blockquote {
+          text-align: justify;
+          text-align-last: center;
+        }
+
+        /* ── Craft about: show on mobile ── */
+        .craft-about { display: block; padding-block-end: 2rem; text-align: center; max-inline-size: 100%; }
+        .craft-about .about-headline { font-size: clamp(2.5rem, 8vw, 3rem) !important; text-align: center; }
+
+        /* ── Improve justified text flow by removing hard breaks ── */
+        .layer-line br, .about-bio br { display: none; }
+
+        /* ── Quotes: adapt for mobile ── */
+        .work-quote { display: block; margin-block-start: 1rem; text-align: center; padding: 0; }
+        .work-quote blockquote { font-size: clamp(1.6rem, 6vw, 2.2rem) !important; }
+        #panel_origin .work-quote, #panel_work .work-quote { margin-block-start: 1rem; max-inline-size: 100%; align-self: center; }
+
+        /* ── Fish: subtle background ── */
+        .swimming-fish:not(.fish-full) { display: block; width: 100vw; z-index: 0; }
+        .panel-copy { z-index: 2; }
+
+        /* ── Work table ── */
+        .work-row {
+          grid-template-columns: 1fr;
+          gap: 0.5rem;
+          justify-items: center;
+          text-align: center;
+        }
+        .work-left { align-items: center; }
+        .work-co, .work-role { font-size: 0.85rem; }
+        .work-yr { font-size: 0.85rem; }
+
+        /* ── Project list ── */
+        .proj-row { flex-direction: column; align-items: center; gap: 0.4rem; padding-block: 0.8rem; text-align: center; }
+        .proj-name, .proj-stack { font-size: 0.85rem; }
+        .proj-stack { white-space: normal; line-height: 1.4; text-align: center; }
+
+        /* ── Flying gallery: full width on mobile ── */
+        .fg {
+          width: 100%;
+          align-self: auto;
+        }
+        .fg-stage { min-height: 320px; }
+
+        /* ── Flying gallery overlay fix ── */
+        .fg-overlay {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+          padding: 1.2rem 1rem;
+          background: linear-gradient(to bottom, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.6) 75%, transparent 100%);
+        }
+        .fg-counter { margin: 0; font-size: 0.75rem; opacity: 0.8; }
+        .fg-proj-title { font-size: 1.25rem; margin: 0.25rem 0 0 0; line-height: 1.2; }
+        .fg-meta-right {
+          position: relative;
+          inset: auto;
+          align-items: center;
+          margin-block-start: 0.5rem;
+          gap: 0.4rem;
+        }
+        .fg-proj-sub { text-align: center; font-size: 0.65rem; margin: 0; }
+        .fg-tags { justify-content: center; margin-block-start: 0.2rem; gap: 0.4rem; flex-wrap: wrap; }
+        .fg-tag { font-size: 0.6rem; padding: 0.2rem 0.5rem; }
+
+        /* ── Contacts ── */
+        .origin-contacts { gap: 0.5rem 1rem; justify-content: center; text-align: center; }
+        .origin-contacts a { font-size: 0.8rem; }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="hud">
+      <span class="hud-title">FERL<br />JOHN<br />JAVIER</span>
+      <div class="progress-bar">
+        <div id="progress_fill" class="progress-fill"></div>
+      </div>
+      <span id="hud_label" class="hud-label">ORIGIN</span>
+    </div>
+    <nav id="panel_nav" aria-label="Panels">
+      <button class="nav-dot is-active" data-index="0" title="Origin"></button
+      ><button class="nav-dot" data-index="1" title="Craft"></button
+      ><button class="nav-dot" data-index="2" title="Work"></button
+      ><button class="nav-dot" data-index="3" title="Build"></button
+      ><button class="nav-dot" data-index="4" title="Reach"></button>
+    </nav>
+    <div id="social_links">
+      <a class="social-btn" href="https://github.com/ferlerrorr" target="_blank" rel="noopener" aria-label="GitHub">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+      </a>
+      <a class="social-btn" href="https://linkedin.com/in/fjjavier" target="_blank" rel="noopener" aria-label="LinkedIn">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+      </a>
+      <a class="social-btn" href="#" target="_blank" rel="noopener" aria-label="X / Twitter">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+      </a>
+      <a class="social-btn" href="#" target="_blank" rel="noopener" aria-label="Instagram">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg>
+      </a>
+      <a class="social-btn" href="mailto:fjohn.d.javier@gmail.com" aria-label="Email">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="2,4 12,13 22,4"/></svg>
+      </a>
+    </div>
+    <svg width="0" height="0" style="position: absolute; width: 0; height: 0;">
+      <filter id="chromakey" color-interpolation-filters="sRGB">
+        <feColorMatrix type="matrix" values="
+          1 0 0 0 0
+          0 1 0 0 0
+          0 0 1 0 0
+          0 -10 10 0 0
+        " />
+      </filter>
+    </svg>
+    <div class="scene">
+      <div id="scene_bg"></div>
+      <div class="scroll-track">
+        <section class="panel" id="panel_origin">
+          <div class="swimming-fish fish-full" id="fish">
+            <video src="assets/vecteezy_the-colorful-fish-silhouette-swimming-in-liquid-texture_44306788.mp4" autoplay loop muted playsinline disablePictureInPicture preload="auto"></video>
+          </div>
+          <div class="panel-inner">
+            <span class="layer-bg" aria-hidden="true">ORIGIN</span>
+            <div class="panel-copy">
+              <p class="layer-tag">
+                Layer I · Origin · PH · ↓ Scroll to explore
+              </p>
+              <h2>FERL JOHN<br />D. JAVIER.</h2>
+              <p class="layer-line">
+                Full stack developer.<br />Node.js · React · Laravel · PHP.<br />Building
+                APIs and systems that scale.
+              </p>
+              <div class="origin-contacts">
+                <a href="mailto:fjohn.d.javier@gmail.com"
+                  >fjohn.d.javier@gmail.com</a
+                >
+                <a
+                  href="https://linkedin.com/in/fjjavier"
+                  target="_blank"
+                  rel="noopener"
+                  >LinkedIn</a
+                >
+                <a
+                  href="https://github.com/ferlerrorr"
+                  target="_blank"
+                  rel="noopener"
+                  >GitHub</a
+                >
+                <a href="tel:+639761131130">+63 976 1131130</a>
+              </div>
+              <div class="scroll-hint" aria-label="Scroll to explore">
+                <span>↓</span>
+                <span class="scroll-hint-text">scroll to explore</span>
+              </div>
+            </div>
+            <div class="work-quote">
+              <blockquote>
+                "THE BEST WAY TO PREDICT THE FUTURE IS TO BUILD IT."
+              </blockquote>
+              <cite>— Peter Drucker</cite>
+            </div>
+          </div>
+        </section>
+        <section class="panel" id="panel_craft">
+          <div class="swimming-fish fish-left">
+            <video src="assets/vecteezy_the-colorful-fish-silhouette-swimming-in-liquid-texture_44306788.mp4" loop muted playsinline disablePictureInPicture preload="auto"></video>
+          </div>
+          <div class="panel-inner is-right">
+            <span class="layer-bg" aria-hidden="true">CRAFT</span>
+            <div class="panel-copy craft-about">
+              <p class="layer-tag">About</p>
+              <p class="about-headline">GO AHEAD.<br />DIVE<br />DEEPER.</p>
+              <p class="about-bio">
+                Codes from scratch and brings ideas to life<br />
+                in the browser. Eye for design in UI/UX.<br />
+                Values clean structure and thoughtful interactions.
+              </p>
+              <div class="about-creds">
+                <div class="about-cred-row">
+                  <span class="about-cred-label">Role</span>
+                  <span class="about-cred-val">Full Stack Developer</span>
+                </div>
+                <div class="about-cred-row">
+                  <span class="about-cred-label">Industries</span>
+                  <span class="about-cred-val">Pharmacy · E-commerce · Logistics · Tech</span>
+                </div>
+                <div class="about-cred-row">
+                  <span class="about-cred-label">Status</span>
+                  <span class="about-cred-val">Available · Philippines · Remote-ready</span>
+                </div>
+              </div>
+            </div>
+            <div class="panel-copy align-right">
+              <p class="layer-tag">Layer II · Skills · Craft</p>
+              <h2>FULL<br />STACK.<br />ALL THE<br />WAY DOWN.</h2>
+              <div class="stack-block">
+                <div class="stack-row">
+                  <span class="stack-cat">Languages & Frameworks</span>
+                  <span class="stack-items"
+                    >PHP · JavaScript · TypeScript · Laravel · Node.js · React ·
+                    Next.js</span
+                  >
+                </div>
+                <div class="stack-row">
+                  <span class="stack-cat">Databases & Integrations</span>
+                  <span class="stack-items"
+                    >MySQL · SQL · ETL Pipelines · SFTP · REST APIs</span
+                  >
+                </div>
+                <div class="stack-row">
+                  <span class="stack-cat">Dev Tools & Platforms</span>
+                  <span class="stack-items"
+                    >Git · Docker · Linux · Nginx · Cloudflare</span
+                  >
+                </div>
+                <div class="stack-row">
+                  <span class="stack-cat">Styling & SEO</span>
+                  <span class="stack-items"
+                    >Tailwind CSS · Materialize · Lighthouse · Google
+                    Analytics</span
+                  >
+                </div>
+                <div class="stack-row">
+                  <span class="stack-cat">Technical Writing</span>
+                  <span class="stack-items"
+                    >System Architecture · API Specs · Dev Onboarding</span
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section class="panel" id="panel_work">
+          <div class="swimming-fish">
+            <video src="assets/vecteezy_the-colorful-fish-silhouette-swimming-in-liquid-texture_44306788.mp4" loop muted playsinline disablePictureInPicture preload="auto"></video>
+          </div>
+          <div class="panel-inner">
+            <span class="layer-bg" aria-hidden="true">WORK</span>
+            <div class="panel-copy">
+              <p class="layer-tag">Layer III · Experience · 5 Years</p>
+              <h2>BUILT.<br />SHIPPED.<br />REPEATED.</h2>
+              <div class="work-table">
+                <div class="work-row">
+                  <div class="work-left">
+                    <span class="work-co work-current">SOCIA</span>
+                    <span class="work-role"
+                      >Full Stack Dev & Technical Writer · Lootbx</span
+                    >
+                  </div>
+                  <span class="work-yr">2025 →</span>
+                </div>
+                <div class="work-row">
+                  <div class="work-left">
+                    <span class="work-co">Southstar Drug</span>
+                    <span class="work-role">IT Specialist · Web Developer</span>
+                  </div>
+                  <span class="work-yr">2022–25</span>
+                </div>
+                <div class="work-row">
+                  <div class="work-left">
+                    <span class="work-co">In1Go Technologies</span>
+                    <span class="work-role">Web Developer</span>
+                  </div>
+                  <span class="work-yr">2020–22</span>
+                </div>
+                <div class="work-row">
+                  <div class="work-left">
+                    <span class="work-co">AKAP Microfinance</span>
+                    <span class="work-role">Center Manager</span>
+                  </div>
+                  <span class="work-yr">2018–19</span>
+                </div>
+              </div>
+              <p class="layer-line" style="margin-block-start: 1.5rem">
+                Pharmacy · E-commerce · Logistics · Tech.<br />QCU — BS
+                Information Technology, 2022.
+              </p>
+            </div>
+            <div class="work-quote">
+              <blockquote>
+                "THE DESIRE TO CREATE IS ONE OF THE DEEPEST YEARNINGS OF THE HUMAN SOUL."
+              </blockquote>
+              <cite>— Dieter F. Uchtdorf</cite>
+            </div>
+          </div>
+        </section>
+        <section class="panel" id="panel_build">
+          <div class="swimming-fish">
+            <video src="assets/vecteezy_the-colorful-fish-silhouette-swimming-in-liquid-texture_44306788.mp4" loop muted playsinline disablePictureInPicture preload="auto"></video>
+          </div>
+          <div class="panel-inner is-right">
+            <span class="layer-bg" aria-hidden="true">BUILD</span>
+            <div class="fg" id="buildGallery">
+              <div class="fg-stage">
+                <div
+                  class="fg-item"
+                  data-side="active"
+                  style="--center-offset: 0; --i: 0"
+                >
+                  <div class="fg-slide">
+                    <img
+                      src="assets/1go.png"
+                      alt="In1Go Technologies"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                    <div class="fg-overlay">
+                      <p class="fg-counter">01 / 05</p>
+                      <h3 class="fg-proj-title">IN1GO TECHNOLOGIES</h3>
+                      <div class="fg-meta-right">
+                        <p class="fg-proj-sub">[WEB DEVELOPER] — [2020–22]</p>
+                        <div class="fg-tags">
+                          <span class="fg-tag">Laravel</span
+                          ><span class="fg-tag">PHP</span
+                          ><span class="fg-tag">MySQL</span
+                          ><span class="fg-tag">Logistics</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="fg-item"
+                  data-side="next"
+                  style="--center-offset: 1; --i: 1"
+                >
+                  <div class="fg-slide">
+                    <img
+                      src="assets/mobidiser.png"
+                      alt="Mobidiser"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                    <div class="fg-overlay">
+                      <p class="fg-counter">02 / 05</p>
+                      <h3 class="fg-proj-title">MOBIDISER</h3>
+                      <div class="fg-meta-right">
+                        <p class="fg-proj-sub">[MOBILE APP] — [2021]</p>
+                        <div class="fg-tags">
+                          <span class="fg-tag">React Native</span
+                          ><span class="fg-tag">Laravel</span
+                          ><span class="fg-tag">MySQL</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="fg-item"
+                  data-side="next"
+                  style="--center-offset: 2; --i: 2"
+                >
+                  <div class="fg-slide">
+                    <img
+                      src="assets/day1.png"
+                      alt="Day1 HR"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                    <div class="fg-overlay">
+                      <p class="fg-counter">03 / 05</p>
+                      <h3 class="fg-proj-title">DAY1 HR SYSTEM</h3>
+                      <div class="fg-meta-right">
+                        <p class="fg-proj-sub">[HR PLATFORM] — [2021]</p>
+                        <div class="fg-tags">
+                          <span class="fg-tag">React</span
+                          ><span class="fg-tag">Laravel</span
+                          ><span class="fg-tag">MySQL</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="fg-item"
+                  data-side="next"
+                  style="--center-offset: 3; --i: 3"
+                >
+                  <div class="fg-slide">
+                    <img
+                      src="assets/onecom.png"
+                      alt="1ecom.ph"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                    <div class="fg-overlay">
+                      <p class="fg-counter">04 / 05</p>
+                      <h3 class="fg-proj-title">1ECOM.PH</h3>
+                      <div class="fg-meta-right">
+                        <p class="fg-proj-sub">[E-COMMERCE] — [2022]</p>
+                        <div class="fg-tags">
+                          <span class="fg-tag">React</span
+                          ><span class="fg-tag">Laravel</span
+                          ><span class="fg-tag">PHP</span
+                          ><span class="fg-tag">MySQL</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="fg-item"
+                  data-side="next"
+                  style="--center-offset: 4; --i: 4"
+                >
+                  <div class="fg-slide">
+                    <img
+                      src="assets/tms.png"
+                      alt="TMS Logistics"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                    <div class="fg-overlay">
+                      <p class="fg-counter">05 / 05</p>
+                      <h3 class="fg-proj-title">TMS LOGISTICS</h3>
+                      <div class="fg-meta-right">
+                        <p class="fg-proj-sub">
+                          [TRANSPORT MANAGEMENT] — [2022]
+                        </p>
+                        <div class="fg-tags">
+                          <span class="fg-tag">Next.js</span
+                          ><span class="fg-tag">Laravel</span
+                          ><span class="fg-tag">MySQL</span
+                          ><span class="fg-tag">ETL</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <button class="fg-btn fg-prev" aria-label="Previous project">
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 20 20"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <polyline points="13 16 7 10 13 4" />
+                  </svg>
+                </button>
+                <button class="fg-btn fg-next" aria-label="Next project">
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 20 20"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <polyline points="7 4 13 10 7 16" />
+                  </svg>
+                </button>
+              </div>
+              <ul class="fg-thumbs" role="tablist">
+                <li role="presentation">
+                  <button
+                    class="fg-thumb"
+                    aria-current="true"
+                    aria-label="In1Go Technologies"
+                  >
+                    <img
+                      src="assets/1go.png"
+                      alt=""
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </button>
+                </li>
+                <li role="presentation">
+                  <button
+                    class="fg-thumb"
+                    aria-current="false"
+                    aria-label="Mobidiser"
+                  >
+                    <img
+                      src="assets/mobidiser.png"
+                      alt=""
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </button>
+                </li>
+                <li role="presentation">
+                  <button
+                    class="fg-thumb"
+                    aria-current="false"
+                    aria-label="Day1 HR"
+                  >
+                    <img
+                      src="assets/day1.png"
+                      alt=""
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </button>
+                </li>
+                <li role="presentation">
+                  <button
+                    class="fg-thumb"
+                    aria-current="false"
+                    aria-label="1ecom.ph"
+                  >
+                    <img
+                      src="assets/onecom.png"
+                      alt=""
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </button>
+                </li>
+                <li role="presentation">
+                  <button
+                    class="fg-thumb"
+                    aria-current="false"
+                    aria-label="TMS Logistics"
+                  >
+                    <img
+                      src="assets/tms.png"
+                      alt=""
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </button>
+                </li>
+              </ul>
+            </div>
+            <div class="panel-copy align-right">
+              <p class="layer-tag">Layer IV · Projects · Production</p>
+              <h2>10+<br />SYSTEMS.<br />LIVE.</h2>
+              <div class="proj-list">
+                <div class="proj-row">
+                  <span class="proj-name">Lootbx Platform</span>
+                  <span class="proj-stack">Node.js · React</span>
+                </div>
+                <div class="proj-row">
+                  <span class="proj-name">ASN Web App</span>
+                  <span class="proj-stack">Next.js · Laravel · ETL</span>
+                </div>
+                <div class="proj-row">
+                  <span class="proj-name">Shopee ETL Integration</span>
+                  <span class="proj-stack">Laravel · PHP · MySQL</span>
+                </div>
+                <div class="proj-row">
+                  <span class="proj-name">Grab SFTP Integration</span>
+                  <span class="proj-stack">Next.js · Laravel · SFTP</span>
+                </div>
+                <div class="proj-row">
+                  <span class="proj-name">Maxicare Order API</span>
+                  <span class="proj-stack">Laravel · REST · PHP</span>
+                </div>
+                <div class="proj-row">
+                  <span class="proj-name">SSD Epass Rewards App</span>
+                  <span class="proj-stack">Laravel · React</span>
+                </div>
+              </div>
+              <p class="layer-line" style="margin-block-start: 1.25rem">
+                Healthcare · E-commerce · Logistics · Rewards.<br />From API
+                spec to production deploy.
+              </p>
+            </div>
+          </div>
+        </section>
+        <section class="panel" id="panel_reach">
+          <div class="swimming-fish fish-full">
+            <video src="assets/vecteezy_the-colorful-fish-silhouette-swimming-in-liquid-texture_44306788.mp4" loop muted playsinline disablePictureInPicture preload="auto"></video>
+          </div>
+          <div class="panel-inner is-center">
+            <span class="layer-bg" aria-hidden="true">REACH</span>
+            <div class="panel-copy align-center">
+              <p class="layer-tag">Layer V · Contact · Terminal</p>
+              <h2>OPEN<br />FOR YOUR<br />NEXT<br />IDEA.</h2>
+              <div class="reach-links">
+                <a class="reach-link" href="mailto:fjohn.d.javier@gmail.com"
+                  >fjohn.d.javier@gmail.com</a
+                >
+                <div class="reach-divider"></div>
+                <a class="reach-link" href="tel:+639761131130"
+                  >+63 976 1131130</a
+                >
+                <div class="reach-divider"></div>
+                <a
+                  class="reach-link"
+                  href="https://linkedin.com/in/fjjavier"
+                  target="_blank"
+                  rel="noopener"
+                  >linkedin.com/in/fjjavier</a
+                >
+                <div class="reach-divider"></div>
+                <a
+                  class="reach-link"
+                  href="https://github.com/ferlerrorr"
+                  target="_blank"
+                  rel="noopener"
+                  >github.com/ferlerrorr</a
+                >
+              </div>
+              <p class="layer-line">
+                Available for full-time roles, freelance projects,<br />and
+                technical writing engagements.<br />Philippines-based. Open to
+                remote worldwide.
+              </p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+    <script>
+      const IS_TOUCH = navigator.maxTouchPoints > 0,
+        LAYERS = ["ORIGIN", "CRAFT", "WORK", "BUILD", "REACH"],
+        LERP = 0.14,
+        clamp = (e, t, n) => Math.min(Math.max(e, t), n),
+        createScroller = (e) => {
+          const t = document.querySelector(".scroll-track");
+          if (!t) return null;
+          const n = e.onProgress || null;
+          let r = 0,
+            a = 0,
+            o = null,
+            l = null,
+            i = null,
+            s = null;
+          const c = () => Math.max(0, t.scrollHeight - window.innerHeight),
+            u = (e) => {
+              t.style.transform = `translate3d(0,${e}px,0)`;
+            },
+            d = () => {
+              const e = `${t.scrollHeight}px`;
+              document.body.style.height !== e &&
+                (document.body.style.height = e);
+            },
+            p = (e) => {
+              l || (l = e);
+              const d = (e - l) / 16.666;
+              l = e;
+              const m = 1 - Math.pow(1 - LERP, d),
+                h = a - r;
+              (Math.abs(h) > 0.01 ? (r += h * m) : r !== a && (r = a),
+                u(r),
+                (o = requestAnimationFrame(p)));
+            },
+            m = () => {
+              const e = c(),
+                t = -window.scrollY;
+              if (IS_TOUCH)
+                ((s = t),
+                  i ||
+                    (i = requestAnimationFrame(() => {
+                      ((r = a = s), u(s), (i = null));
+                    })));
+              else a = t;
+              const r = e > 0 ? window.scrollY / e : 0;
+              n?.(clamp(r, 0, 1));
+              clearTimeout(m.timeout);
+              m.timeout = setTimeout(() => {
+                if (e <= 0 || m.isSnapping || window.innerWidth <= 900 || IS_TOUCH) return;
+                const maxIndex = LAYERS.length - 1;
+                const nearestIndex = Math.round((window.scrollY / e) * maxIndex);
+                const targetScroll = (nearestIndex / maxIndex) * e;
+                if (Math.abs(window.scrollY - targetScroll) > 5) {
+                   m.isSnapping = true;
+                   window.scrollTo({ top: targetScroll, behavior: 'smooth' });
+                   setTimeout(() => { m.isSnapping = false; }, 800);
+                }
+              }, 150);
+            },
+            h = new ResizeObserver(() => {
+              d();
+              const e = c();
+              (IS_TOUCH ? (r = a = -window.scrollY) : (a = -window.scrollY),
+                u(r));
+              const t = e > 0 ? window.scrollY / e : 0;
+              n?.(clamp(t, 0, 1));
+            });
+          h.observe(t);
+          const v = c(),
+            g = -clamp(window.scrollY, 0, v);
+          ((r = a = g),
+            u(r),
+            n?.(clamp(v > 0 ? window.scrollY / v : 0, 0, 1)),
+            window.addEventListener("scroll", m, { passive: !0 }),
+            window.addEventListener("resize", m, { passive: !0 }),
+            IS_TOUCH || (o = requestAnimationFrame(p)));
+          return {
+            scrollToPanel: (e) => {
+              const t = clamp(e, 0, LAYERS.length - 1) / (LAYERS.length - 1);
+              window.scrollTo({ top: c() * t, behavior: "smooth" });
+            },
+            destroy: () => {
+              (o && cancelAnimationFrame(o),
+                i && cancelAnimationFrame(i),
+                h.disconnect(),
+                window.removeEventListener("scroll", m),
+                window.removeEventListener("resize", m));
+            },
+          };
+        },
+        ui = (() => {
+          const e = document.getElementById("progress_fill"),
+            t = document.getElementById("hud_label"),
+            n = [...document.querySelectorAll(".nav-dot")],
+            r = document.getElementById("scene_bg");
+          let a = -1,
+            lastP = 0;
+          return {
+            update(o) {
+              const l = clamp(o, 0, 1);
+              (e && (e.style.transform = `scaleX(${l})`),
+                r && (r.style.transform = `translate3d(0, ${-80 * (1 - l)}%, 0)`));
+              lastP = l;
+              const i = Math.min(
+                Math.floor(l * LAYERS.length),
+                LAYERS.length - 1,
+              );
+              i !== a &&
+                ((a = i),
+                t && (t.textContent = LAYERS[i]),
+                n.forEach((e, t) => e.classList.toggle("is-active", t === i)),
+                window.dispatchEvent(new CustomEvent('layerChanged', { detail: i })));
+            },
+          };
+        })(),
+        initialize = () => {
+          const run = () => {
+            document.fonts.ready.then(() => {
+              const e = createScroller({ onProgress: (e) => ui.update(e) });
+              document.querySelectorAll(".nav-dot").forEach((t) => {
+                t.addEventListener("click", () =>
+                  e?.scrollToPanel(Number(t.dataset.index)),
+                );
+              });
+              let currentLayerIndex = 0;
+              window.addEventListener('layerChanged', (ev) => {
+                currentLayerIndex = ev.detail;
+              });
+              let isWheelSnapping = false;
+              window.addEventListener(
+                "wheel",
+                (ev) => {
+                  if (ev.defaultPrevented || window.innerWidth <= 900 || IS_TOUCH) return;
+                  ev.preventDefault();
+                  if (isWheelSnapping) return;
+                  const direction = Math.sign(ev.deltaY);
+                  const maxIndex = LAYERS.length - 1;
+                  const nextIndex = clamp(currentLayerIndex + direction, 0, maxIndex);
+                  isWheelSnapping = true;
+                  e?.scrollToPanel(nextIndex);
+                  setTimeout(() => { isWheelSnapping = false; }, 800);
+                },
+                { passive: false },
+              );
+            });
+          };
+          "loading" === document.readyState
+            ? document.addEventListener("DOMContentLoaded", run, { once: true })
+            : run();
+        };
+      class FlyingGallery {
+        constructor(e) {
+          ((this.root = e),
+            (this.items = [...e.querySelectorAll(".fg-item")]),
+            (this.thumbs = [...e.querySelectorAll(".fg-thumb")]),
+            (this.count = this.items.length),
+            (this.active = 0),
+            e
+              .querySelector(".fg-prev")
+              ?.addEventListener("click", () => this.navigate(-1)),
+            e
+              .querySelector(".fg-next")
+              ?.addEventListener("click", () => this.navigate(1)),
+            this.thumbs.forEach((e, t) =>
+              e.addEventListener("click", () => this.goTo(t)),
+            ));
+          const stage = e.querySelector('.fg-stage') || e;
+          let _sx = 0;
+          stage.addEventListener('touchstart', ev => { _sx = ev.touches[0].clientX; }, { passive: true });
+          stage.addEventListener('touchend', ev => {
+            const dx = ev.changedTouches[0].clientX - _sx;
+            if (Math.abs(dx) > 30) this.navigate(dx < 0 ? 1 : -1);
+          }, { passive: true });
+          this.render();
+        }
+        navigate(e) {
+          this.goTo((this.active + e + this.count) % this.count);
+        }
+        goTo(e) {
+          ((this.active = e), this.render());
+        }
+        render() {
+          const { active: e, count: t } = this;
+          (this.items.forEach((n, r) => {
+            const a = r - e,
+              o = Math.abs(a),
+              l = 0 === a ? "active" : a < 0 ? "prev" : "next";
+            ((n.dataset.side = l),
+              n.style.setProperty("--center-offset", o),
+              n.style.setProperty("--i", r),
+              (n.style.zIndex = t - o));
+          }),
+            this.thumbs.forEach((t, n) => {
+              t.setAttribute("aria-current", n === e ? "true" : "false");
+            }));
+        }
+      }
+      class ScrollGalleryLock {
+        constructor(e, t) {
+          ((this.gallery = e),
+            (this.panel = t),
+            (this.cooldown = !1),
+            (this.COOLDOWN_MS = 300),
+            (this._snapY = this.panel.offsetTop),
+            (this._released = !1),
+            window.addEventListener("wheel", (e) => this._handleWheel(e), {
+              passive: !1,
+            }),
+            window.addEventListener("touchmove", (e) => this._handleTouch(e), {
+              passive: !1,
+            }));
+        }
+        _inRange() {
+          return (
+            Math.abs(window.scrollY - this.panel.offsetTop) < window.innerHeight * 0.4
+          );
+        }
+        _try(e) {
+          const t = this.gallery.active === this.gallery.count - 1,
+            n = 0 === this.gallery.active;
+          if ((e > 0 && t) || (e < 0 && n)) return !1;
+          if (!this.cooldown) {
+            ((this.cooldown = !0),
+              setTimeout(() => (this.cooldown = !1), this.COOLDOWN_MS),
+              this.gallery.navigate(e));
+          }
+          return !0;
+        }
+        _handleWheel(e) {
+          if (!this._inRange()) {
+            this._released = !1;
+            return;
+          }
+          if (this._released) return;
+          
+          const t = e.deltaY > 0 ? 1 : -1;
+          if (this._try(t)) {
+             e.preventDefault();
+          } else {
+             this._released = !0;
+          }
+        }
+        _handleTouch(e) {
+          if (!this._inRange()) {
+            this._released = !1;
+            return;
+          }
+          if (this._released) return;
+          const t = e.touches[0].clientY;
+          if (this._lastT && Math.abs(this._lastT - t) > 10) {
+            const n = this._lastT - t > 0 ? 1 : -1;
+            if (this._try(n)) {
+               e.preventDefault();
+            } else {
+               this._released = !0;
+            }
+          }
+          this._lastT = t;
+        }
+      }
+      (document.addEventListener("DOMContentLoaded", () => {
+        const e = document.getElementById("buildGallery"),
+          t = document.getElementById("panel_build");
+        if (e) {
+          const n = new FlyingGallery(e);
+          if (t && window.innerWidth > 900 && !IS_TOUCH) {
+             new ScrollGalleryLock(n, t);
+          }
+        }
+      }),
+        initialize());
+    </script>
+    <script>
+      const fishVids = document.querySelectorAll('.swimming-fish video');
+      const getFishOpacity = () => window.innerWidth <= 900 ? '0.12' : '0.35';
+
+      window.addEventListener('layerChanged', (e) => {
+        const active = e.detail;
+        fishVids.forEach((v, idx) => {
+          if (idx === active) {
+            if (v.dataset.active === 'true') return;
+            v.dataset.active = 'true';
+            v.style.opacity = getFishOpacity();
+            v.play().catch(() => {});
+          } else if (v.dataset.active === 'true') {
+            v.dataset.active = 'false';
+            v.style.opacity = '0';
+            setTimeout(() => { if (v.dataset.active !== 'true') v.pause(); }, 1500);
+          }
+        });
+      });
+
+      fishVids.forEach((v, idx) => {
+        v.playbackRate = 0.9;
+        v.dataset.active = idx === 0 ? 'true' : 'false';
+        v.style.opacity = idx === 0 ? getFishOpacity() : '0';
+        v.style.transform = `rotate(${Math.floor(Math.random() * 360)}deg) scale(1.3)`;
+        if (idx === 0) v.play().catch(() => {}); else v.pause();
+
+        let lastTime = 0;
+        let opacityState = idx === 0 ? 'visible' : 'hidden';
+
+        v.addEventListener('timeupdate', () => {
+          if (!v.duration || v.dataset.active !== 'true') return;
+          if (v.currentTime < lastTime)
+            v.style.transform = `rotate(${Math.floor(Math.random() * 360)}deg) scale(1.3)`;
+          lastTime = v.currentTime;
+          const remaining = v.duration - v.currentTime;
+          if (remaining <= 1.5 && opacityState !== 'hidden') {
+            opacityState = 'hidden';
+            v.style.opacity = '0';
+          } else if (remaining > 1.5 && v.currentTime > 0.1 && opacityState !== 'visible') {
+            opacityState = 'visible';
+            v.style.opacity = getFishOpacity();
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
