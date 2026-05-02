@@ -1016,7 +1016,7 @@
       <div class="scroll-track">
         <section class="panel" id="panel_origin">
           <div class="swimming-fish fish-full" id="fish">
-            <video src="assets/vecteezy_the-colorful-fish-silhouette-swimming-in-liquid-texture_44306788.mp4" autoplay loop muted playsinline disablePictureInPicture preload="auto"></video>
+            <video src="assets/vecteezy_the-colorful-fish-silhouette-swimming-in-liquid-texture_44306788.mp4" autoplay loop muted playsinline webkit-playsinline disablePictureInPicture preload="auto"></video>
           </div>
           <div class="panel-inner">
             <span class="layer-bg" aria-hidden="true">ORIGIN</span>
@@ -1062,7 +1062,7 @@
         </section>
         <section class="panel" id="panel_craft">
           <div class="swimming-fish fish-left">
-            <video src="assets/vecteezy_the-colorful-fish-silhouette-swimming-in-liquid-texture_44306788.mp4" autoplay loop muted playsinline disablePictureInPicture preload="auto"></video>
+            <video src="assets/vecteezy_the-colorful-fish-silhouette-swimming-in-liquid-texture_44306788.mp4" autoplay loop muted playsinline webkit-playsinline disablePictureInPicture preload="auto"></video>
           </div>
           <div class="panel-inner is-right">
             <span class="layer-bg" aria-hidden="true">CRAFT</span>
@@ -1131,7 +1131,7 @@
         </section>
         <section class="panel" id="panel_work">
           <div class="swimming-fish">
-            <video src="assets/vecteezy_the-colorful-fish-silhouette-swimming-in-liquid-texture_44306788.mp4" autoplay loop muted playsinline disablePictureInPicture preload="auto"></video>
+            <video src="assets/vecteezy_the-colorful-fish-silhouette-swimming-in-liquid-texture_44306788.mp4" autoplay loop muted playsinline webkit-playsinline disablePictureInPicture preload="auto"></video>
           </div>
           <div class="panel-inner">
             <span class="layer-bg" aria-hidden="true">WORK</span>
@@ -1185,7 +1185,7 @@
         </section>
         <section class="panel" id="panel_build">
           <div class="swimming-fish">
-            <video src="assets/vecteezy_the-colorful-fish-silhouette-swimming-in-liquid-texture_44306788.mp4" autoplay loop muted playsinline disablePictureInPicture preload="auto"></video>
+            <video src="assets/vecteezy_the-colorful-fish-silhouette-swimming-in-liquid-texture_44306788.mp4" autoplay loop muted playsinline webkit-playsinline disablePictureInPicture preload="auto"></video>
           </div>
           <div class="panel-inner is-right">
             <span class="layer-bg" aria-hidden="true">BUILD</span>
@@ -1466,7 +1466,7 @@
         </section>
         <section class="panel" id="panel_reach">
           <div class="swimming-fish fish-full">
-            <video src="assets/vecteezy_the-colorful-fish-silhouette-swimming-in-liquid-texture_44306788.mp4" autoplay loop muted playsinline disablePictureInPicture preload="auto"></video>
+            <video src="assets/vecteezy_the-colorful-fish-silhouette-swimming-in-liquid-texture_44306788.mp4" autoplay loop muted playsinline webkit-playsinline disablePictureInPicture preload="auto"></video>
           </div>
           <div class="panel-inner is-center">
             <span class="layer-bg" aria-hidden="true">REACH</span>
@@ -1782,7 +1782,7 @@
     </script>
     <script>
       const fishVids = document.querySelectorAll('.swimming-fish video');
-      const getFishOpacity = () => window.innerWidth <= 900 ? '0.12' : '0.35';
+      const getFishOpacity = () => window.innerWidth <= 900 ? '0.25' : '0.35';
 
       window.addEventListener('layerChanged', (e) => {
         const active = e.detail;
@@ -1805,7 +1805,6 @@
         v.dataset.active = idx === 0 ? 'true' : 'false';
         v.style.opacity = idx === 0 ? getFishOpacity() : '0';
         v.style.transform = `rotate(${Math.floor(Math.random() * 360)}deg) scale(1.3)`;
-        if (idx === 0) v.play().catch(() => {}); else v.pause();
 
         let lastTime = 0;
         let opacityState = idx === 0 ? 'visible' : 'hidden';
